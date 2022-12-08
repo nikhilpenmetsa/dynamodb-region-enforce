@@ -1,4 +1,5 @@
-# Block item level writes based using Amazon DynamoDB ConditionExpression. The code in this repository demonstrates how to allow/deny writes to an item based on the item's attribute(src_region) and the request's region.
+# Block item level writes based using Amazon DynamoDB ConditionExpression. 
+The code in this repository demonstrates how to allow/deny writes to an item based on an item's attribute(src_region) and the request's region.
 
 
 ## Setup instructions
@@ -6,12 +7,14 @@
 * `cd dynamodb-region-enforce`   Change directory
 * `pip install -r requirements.txt`   Install dependent packages
 
-## Create DynamoDB PersonRegionEnforcement Global table and load with 15 person items. 
-Table is Composite Primary is used - Name(pk), Job(sk). Other attributes are Company and item_primary_region
-`python createAndLoadPersonTable.py`
+## Create DynamoDB PersonRegionEnforcement table in us-west-2 and us-east-2 regions and setup replication. 
+`python createPersonTable.py`
 
-## Assign agents to callers
-To find the first agent who speaks French and has a male gender.
+## Generate sample data and load to table in us-west-2 . 
+`python loadPersonTable.py`
+
+## Experiment updating items . 
+The script picks a random person item from the table, and tries to update the person's Company. If the item's region matches with the request's region, the item is updated, else the write is rejected
 `python enforceItemWriteRegion.py`
 
 ## Cleanup
