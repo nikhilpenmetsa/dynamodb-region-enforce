@@ -1,56 +1,9 @@
 import boto3
-import random
 from faker import Factory
 
 dynamodb_c = boto3.client('dynamodb')
 fake = Factory.create()
 
-
-def create_person_table():
-
-    response = dynamodb_c.create_table(
-        TableName='PersonRegionEnforcement',
-        KeySchema=[
-            {
-                'AttributeName': 'Name',
-                'KeyType': 'HASH'  # Partition key
-            },
-            {
-                'AttributeName': 'Job',
-                'KeyType': 'RANGE'  # Sort key
-            }
-        ],
-        AttributeDefinitions=[
-            {
-                'AttributeName': 'Name',
-                'AttributeType': 'S'
-            },
-            {
-                'AttributeName': 'Job',
-                'AttributeType': 'S'
-            },
-
-        ],
-        BillingMode='PAY_PER_REQUEST'
-    )
-    #print('DynamoDB Table {} created.'.format(response))
-    print('DynamoDB Table {} created.'.format(response['TableDescription']['TableName']))
-
-def insert_to_person_table():
-    random_region_list = ['us-west-2','us-west-1','us-east-2','us-east-1']
-    numOfPersons = 15
-    for i in range(numOfPersons):
-        song_items={}
-        person_profile = fake.profile()
-        dynamodb_c.put_item(TableName='PersonRegionEnforcement', 
-                Item={
-                    'Name' : {'S':person_profile['name']},
-                    'Job' : {'S':person_profile['job']},
-                    'Company' : {'S': person_profile['company']},
-                    'item_primary_region' : {'S' : random.choice(random_region_list)}
-                }
-            )
-        #print(person_profile)
 
 def update_person_company(person_name, person_job, person_new_company):
     #fake = Factory.create()
@@ -94,15 +47,12 @@ def get_random_person_item():
     return random.choice((response['Items']))
     
 if __name__ == '__main__':
-    #create_person_table()
-    #insert_to_person_table()
-    #print(f"Current region is {boto3.session.Session().region_name}")
-    
-    #Pick a random item from the table
+    #Pick a random person item from the table for testing
     random_person = get_random_person_item()
     
     #Create a fake company
     ramdom_company = fake.profile()['company']
+    
     print(f"Attempting to update {random_person['Name']['S']}'s company from '{random_person['Company']['S']}' to '{ramdom_company}'.")
     print(f"Item's existing  region is {random_person['item_primary_region']['S']}")
     print(f"Request's origin region is {boto3.session.Session().region_name} ")
