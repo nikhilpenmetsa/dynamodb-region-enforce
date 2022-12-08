@@ -1,5 +1,6 @@
 import boto3
 from faker import Factory
+import random
 
 dynamodb_c = boto3.client('dynamodb')
 fake = Factory.create()
